@@ -1,12 +1,14 @@
 class Sprite {
-    constructor({ position, imageSrc, frameRate = 1, frameBuffer = 3, scale=1 }) {
+    constructor({ position, imageSrc, frameRate = 1, frameBuffer = 3, scale = 1 }) {
         this.position = position;
         this.scale = scale
+        this.loaded = false;
         this.image = new Image();
         this.image.src = imageSrc;
         this.image.onload = () => {
             this.width = (this.image.width / this.frameRate) * this.scale;
             this.height = this.image.height * this.scale;
+            this.loaded = true;
         };
         this.frameRate = frameRate;
         this.currentFrame = 0;
@@ -22,6 +24,7 @@ class Sprite {
                 x: this.currentFrame * (this.image.width / this.frameRate),
                 y: 0
             },
+            
             width: this.image.width / this.frameRate,
             height: this.image.height
         }
