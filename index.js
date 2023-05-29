@@ -13,7 +13,7 @@ for(let i = 0; i < floorCollisions.length; i += 36){
     floorCollisions2D.push(floorCollisions.slice(i, i + 36));
 };
 
-const platformCollisions2D =[];
+const platformCollisions2D = [];
 for(let i = 0; i < platformCollisions.length; i += 36){
     platformCollisions2D.push(platformCollisions.slice(i, i + 36));
 };
@@ -31,8 +31,8 @@ floorCollisions2D.forEach((row, y)=>{
         }
     })
 });
-const platformCollisionBlock = [];
 
+const platformCollisionBlock = [];
 platformCollisions2D.forEach((row, y)=>{
     row.forEach((Symbol, x)=>{
         if(Symbol === 202){
@@ -53,6 +53,8 @@ const player  =  new Player({
         x:100, y:0
     },
     collisionBlocks:collisionBlocks,
+    imageSrc:'./assets/warrior/Idle.png',
+    frameRate:8
 });
 
 const keys = {
