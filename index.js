@@ -34,16 +34,17 @@ floorCollisions2D.forEach((row, y) => {
     })
 });
 
-const platformCollisionBlock = [];
+const platformCollisionBlocks = [];
 platformCollisions2D.forEach((row, y) => {
     row.forEach((Symbol, x) => {
         if (Symbol === 202) {
-            platformCollisionBlock.push(
+            platformCollisionBlocks.push(
                 new CollisionBlock({
                     position: {
                         x: x * 16,
                         y: y * 16,
-                    }
+                    },
+                    height:6
                 })
             )
         }
@@ -54,9 +55,10 @@ const gravity = 0.5;
 
 const player = new Player({
     position: {
-        x: 100, y: 0
+        x: 100, y: 300
     },
     collisionBlocks: collisionBlocks,
+    platformCollisionBlocks: platformCollisionBlocks,
     imageSrc: './assets/warrior/Idle.png',
     frameRate: 8,
     animations: {
@@ -128,7 +130,7 @@ function animate() {
     collisionBlocks.forEach(collisionBlock => {
         collisionBlock.update();
     });
-    platformCollisionBlock.forEach(block => {
+    platformCollisionBlocks.forEach(block => {
         block.update();
     });
 
@@ -191,13 +193,15 @@ function applyPlayerMovement() {
         if (player.lastDirection === "right") player.switchSprite("Jump");
         else
             player.switchSprite("JumpLeft");
-    } else
-        if (player.velocity.y > 0 && player.velocity.y != 0) {
+    } else{
+         if (player.velocity.y > 0 && player.velocity.y != 0) {
             if (player.lastDirection === "right")
                 player.switchSprite("Fall");
             else
                 player.switchSprite("FallLeft");
         }
+    }
+       
 
 };
 

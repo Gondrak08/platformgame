@@ -1,5 +1,5 @@
 class Player extends Sprite {
-    constructor({ position, collisionBlocks, imageSrc, frameRate, scale = 0.5, animations }) {
+    constructor({ position, collisionBlocks, platformCollisionBlocks, imageSrc, frameRate, scale = 0.5, animations }) {
         super({imageSrc, frameRate, scale});
         this.position = position;
         this.velocity = {
@@ -7,6 +7,7 @@ class Player extends Sprite {
             y: 1
         }
         this.collisionBlocks = collisionBlocks;
+        this.platformCollisionBlocks = platformCollisionBlocks;
         this.hitBox={
             position:{
                 x: this.position.x,
@@ -76,7 +77,7 @@ class Player extends Sprite {
         for (let i = 0; i < this.collisionBlocks.length; i++) {
             const collisionBlock = this.collisionBlocks[i];
             if (
-                collision({ player: this.hitBox, collisionBlock: collisionBlock })
+                collision({ player: this.hitBox, object: collisionBlock })
             ) {
                 if (this.velocity.y > 0) {
                     this.velocity.y = 0;
@@ -93,13 +94,36 @@ class Player extends Sprite {
                 }
             }
         }
+
+        // platformBlocks
+        for (let i = 0; i < this.platformCollisionBlocks.length; i++) {
+            const platformCollisionBlock = this.platformCollisionBlocks[i];
+            if (
+                platformCollision({ player: this.hitBox, object: platformCollisionBlock })
+            ) {
+                if (this.velocity.y > 0) {
+                    this.velocity.y = 0;
+                    const offset = this.hitBox.position.y - this.position.y + this.hitBox.height;
+                    this.position.y = platformCollisionBlock.position.y - offset - 0.01;
+                    break;
+                }
+                // blocks the bottom of the platform \/ 
+                // commented of if necessary.
+                // if (this.velocity.y < 0) {
+                //     this.velocity.y = 0
+                //     const offset = this.hitBox.position.y - this.position.y;
+                //     this.position.y = platformCollisionBlock.position.y + platformCollisionBlock.height - offset + 0.01;
+                //     break;
+                // }
+            }
+        }
     };
 
     checkForHorizontalCollisions() {
         for (let i = 0; i < this.collisionBlocks.length; i++) {
             const collisionBlock = this.collisionBlocks[i];
             if (
-                collision({ player: this.hitBox, collisionBlock: collisionBlock })
+                collision({ player: this.hitBox, object: collisionBlock })
             ) {
                 if (this.velocity.x > 0) {
                     this.velocity.x = 0

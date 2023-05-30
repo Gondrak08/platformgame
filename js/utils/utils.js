@@ -1,11 +1,23 @@
 function collision({
     player,
-    collisionBlock,
+    object,
 }) {
     return (
-        player.position.y + player.height >= collisionBlock.position.y &&
-        player.position.y <= collisionBlock.position.y + collisionBlock.height &&
-        player.position.x <= collisionBlock.position.x + collisionBlock.width &&
-        player.position.x + player.width >= collisionBlock.position.x
+        player.position.y + player.height >= object.position.y &&
+        player.position.y <= object.position.y + object.height &&
+        player.position.x <= object.position.x + object.width &&
+        player.position.x + player.width >= object.position.x
+    )
+};
+
+function platformCollision({
+    player,
+    object,
+}) {
+    return (
+        player.position.y + player.height >= object.position.y &&
+        player.position.y + player.height <= object.position.y + object.height &&
+        player.position.x <= object.position.x + object.width &&
+        player.position.x + player.width >= object.position.x
     )
 }
