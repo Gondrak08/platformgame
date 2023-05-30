@@ -101,8 +101,6 @@ class Player extends Sprite {
         }
     };
 
-
-
     
     update() {
         this.updateFrames();
@@ -110,14 +108,15 @@ class Player extends Sprite {
         this.updateCameraBox();
         this.checkForHorizontalCanvasCollisions();
         // 
-        c.fillStyle = 'rgba(0,255,0,0.2)';
-        c.fillRect(
-            this.cameraBox.position.x,
-            this.cameraBox.position.y,
-            this.cameraBox.width,
-            this.cameraBox.height,
-        )
-
+        // cameraBox box
+        // c.fillStyle = 'rgba(0,255,0,0.2)';
+        // c.fillRect(
+        //     this.cameraBox.position.x,
+        //     this.cameraBox.position.y,
+        //     this.cameraBox.width,
+        //     this.cameraBox.height,
+        // )
+        // player hitbox box
         // c.fillStyle = 'rgba(255,0,0,0.2)';
         // c.fillRect(
         //     this.hitBox.position.x,
