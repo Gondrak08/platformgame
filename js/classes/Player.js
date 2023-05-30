@@ -1,6 +1,6 @@
 class Player extends Sprite {
     constructor({ position, collisionBlocks, platformCollisionBlocks, imageSrc, frameRate, scale = 0.5, animations }) {
-        super({imageSrc, frameRate, scale});
+        super({ imageSrc, frameRate, scale });
         this.position = position;
         this.velocity = {
             x: 0,
@@ -8,45 +8,103 @@ class Player extends Sprite {
         }
         this.collisionBlocks = collisionBlocks;
         this.platformCollisionBlocks = platformCollisionBlocks;
-        this.hitBox={
-            position:{
+        this.hitBox = {
+            position: {
                 x: this.position.x,
                 y: this.position.y
             },
-            width:10,
-            height:10,
+            width: 10,
+            height: 10,
         }
         this.animations = animations;
         this.lastDirection = "right";
-        for(let key in this.animations){
+        for (let key in this.animations) {
             const image = new Image();
             image.src = this.animations[key].imageSrc;
             this.animations[key].image = image;
         }
 
+        this.cameraBox = {
+            position: {
+                x: this.position.x,
+                y: this.position.y
+            },
+            width: 200,
+            height: 80
+        }
     };
 
-    switchSprite(key){
-        if(this.image === this.animations[key].image  || !this.loaded) return;
-        
+    switchSprite(key) {
+        if (this.image === this.animations[key].image || !this.loaded) return;
+
         this.currentFrame = 0;
         this.image = this.animations[key].image;
         this.frameBuffer = this.animations[key].frameBuffer;
         this.frameRate = this.animations[key].frameRate;
     };
 
+    updateCameraBox(){
+        this.cameraBox = {
+            position: {
+                x: this.position.x - 50,
+                y: this.position.y - 25
+            },
+            width: 200,
+            height: 80
+        }
+    }
+
+    checkForHorizontalCanvasCollisions(){
+        if(this.hitBox.position.x + this.hitBox.width + this.velocity.x >= 576|| 
+            this.hitBox.position.x + this.velocity.x <=0){
+            this.velocity.x = 0;
+        }
+      
+    }
+
+    panCameraToTheLeft({canvas, camera}){
+        const cameraBoxRightSide = this.cameraBox.position.x + this.cameraBox.width;
+        const scaledDownCanvasWidth  = canvas.width / 4;
+
+        if(cameraBoxRightSide >= 576) return;
+
+        if(cameraBoxRightSide >= scaledDownCanvasWidth + Math.abs(camera.position.x)){
+            console.log('camera panning to the left');
+            camera.position.x -= this.velocity.x;
+        }
+
+    }
+
+    panCameraToTheRight({canvas, camera}){
+        if(this.cameraBox.position.x <= 0) return;
+
+        if(this.cameraBox.position.x <= Math.abs(camera.position.x)){
+            camera.position.x -= this.velocity.x;
+        }
+    }
+
     update() {
         this.updateFrames();
         this.updateHitBox();
-// 
-        c.fillStyle = 'rgba(255,0,0,0.2)';
+        this.updateCameraBox();
+        this.checkForHorizontalCanvasCollisions();
+        // 
+        c.fillStyle = 'rgba(0,255,0,0.2)';
         c.fillRect(
-            this.hitBox.position.x,
-            this.hitBox.position.y,
-            this.hitBox.width,
-            this.hitBox.height,
+            this.cameraBox.position.x,
+            this.cameraBox.position.y,
+            this.cameraBox.width,
+            this.cameraBox.height,
         )
-// 
+
+        // c.fillStyle = 'rgba(255,0,0,0.2)';
+        // c.fillRect(
+        //     this.hitBox.position.x,
+        //     this.hitBox.position.y,
+        //     this.hitBox.width,
+        //     this.hitBox.height,
+        // )
+        // 
         this.draw();
         this.position.x += this.velocity.x;
         this.updateHitBox();
@@ -56,14 +114,14 @@ class Player extends Sprite {
         this.checkForVerticalCollisions();
     };
 
-    updateHitBox(){
-        this.hitBox={
-            position:{
+    updateHitBox() {
+        this.hitBox = {
+            position: {
                 x: this.position.x + 35,
                 y: this.position.y + 26
             },
-            width:14,
-            height:27,
+            width: 14,
+            height: 27,
         }
     };
 

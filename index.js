@@ -51,7 +51,7 @@ platformCollisions2D.forEach((row, y) => {
     })
 });
 
-const gravity = 0.5;
+const gravity = 0.15;
 
 const player = new Player({
     position: {
@@ -118,6 +118,13 @@ const background = new Sprite({
     imageSrc: './assets/background.png'
 });
 
+const camera = {
+    position:{
+        x:0,
+        y:0
+    }
+};
+
 function animate() {
     window.requestAnimationFrame(animate);
     c.fillStyle = "white";
@@ -125,7 +132,7 @@ function animate() {
     c.save()
     c.fillRect(0, 0, canvas.width, canvas.height);
     c.scale(4, 4);
-    c.translate(0, -background.image.height + scaledCanvas.height);
+    c.translate(camera.position.x, -background.image.height + scaledCanvas.height);
     background.update();
     collisionBlocks.forEach(collisionBlock => {
         collisionBlock.update();
@@ -135,9 +142,7 @@ function animate() {
     });
 
     player.update();
-
     applyPlayerMovement();
-
     c.restore();
 };
 
@@ -155,7 +160,7 @@ function keyDown(e) {
             keys.left = true;
             break;
         case 'w':
-            player.velocity.y = -8;
+            player.velocity.y = -4;
             break;
     }
 };
@@ -173,16 +178,18 @@ function keyUp(e) {
 
 function applyPlayerMovement() {
     player.velocity.x = 0;
-
     if (keys.right) {
         player.switchSprite('Run');
         player.velocity.x = 2;
-        player.lastDirection = "right"
+        player.lastDirection = "right";
+        player.panCameraToTheLeft({camera,canvas});
     }
     else if (keys.left) {
         player.lastDirection = "left"
         player.switchSprite('RunLeft');
         player.velocity.x = -2;
+        player.panCameraToTheRight({camera,canvas});
+
     }
     else if (player.velocity.y === 0) {
         if (player.lastDirection === "right") player.switchSprite("Idle");
@@ -202,7 +209,6 @@ function applyPlayerMovement() {
         }
     }
        
-
 };
 
 
