@@ -47,7 +47,7 @@ class Player extends Sprite {
         this.cameraBox = {
             position: {
                 x: this.position.x - 50,
-                y: this.position.y - 25
+                y: this.position.y
             },
             width: 200,
             height: 80
@@ -73,7 +73,7 @@ class Player extends Sprite {
             camera.position.x -= this.velocity.x;
         }
 
-    }
+    };
 
     panCameraToTheRight({canvas, camera}){
         if(this.cameraBox.position.x <= 0) return;
@@ -81,8 +81,29 @@ class Player extends Sprite {
         if(this.cameraBox.position.x <= Math.abs(camera.position.x)){
             camera.position.x -= this.velocity.x;
         }
-    }
+    };
+   
+    panCameraDown({canvas, camera}){
+        if(this.cameraBox.position.y + this.velocity.y <= 0) return;
+        if(this.cameraBox.position.y <= Math.abs(camera.position.y)){
+            camera.position.y -= this.velocity.y;
+        }
+    };
 
+    panCameraUp({canvas, camera}){
+        // canvasHeight = 432;
+        const canvasHeight = canvas.heigh 
+        if(this.cameraBox.position.y + this.cameraBox.height +  this.velocity.y >= canvasHeight) return;
+
+        const scaleDownCanvasHeight = canvas.height / 4
+        if(this.cameraBox.position.y + this.cameraBox.height >= Math.abs(camera.position.y) + scaleDownCanvasHeight ){
+            camera.position.y -= this.velocity.y;
+        }
+    };
+
+
+
+    
     update() {
         this.updateFrames();
         this.updateHitBox();
