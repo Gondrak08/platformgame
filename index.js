@@ -3,22 +3,24 @@ const c = canvas.getContext('2d');
 
 canvas.width = 1024;
 canvas.height = 576;
+
 const scaledCanvas = {
     width: canvas.width / 4,
     height: canvas.height / 4
 };
 
-const floorCollisions2D = [];
+// game gravity
+const gravity = 0.17
 
+// collisions
+const floorCollisions2D = [];
 for (let i = 0; i < floorCollisions.length; i += 36) {
     floorCollisions2D.push(floorCollisions.slice(i, i + 36));
 };
-
 const platformCollisions2D = [];
 for (let i = 0; i < platformCollisions.length; i += 36) {
     platformCollisions2D.push(platformCollisions.slice(i, i + 36));
 };
-
 const collisionBlocks = [];
 floorCollisions2D.forEach((row, y) => {
     row.forEach((Symbol, x) => {
@@ -34,7 +36,6 @@ floorCollisions2D.forEach((row, y) => {
         }
     })
 });
-
 const platformCollisionBlocks = [];
 platformCollisions2D.forEach((row, y) => {
     row.forEach((Symbol, x) => {
@@ -52,8 +53,28 @@ platformCollisions2D.forEach((row, y) => {
     })
 });
 
-const gravity = 0.15;
+// end
 
+
+// **
+// background and camera
+const background = new Sprite({
+    position: {
+        x: 0,
+        y: 0
+    },
+    imageSrc: './assets/background.png'
+});
+const backgroundImageHeight = 432
+const camera = {
+    position: {
+        x: 0,
+        y: -backgroundImageHeight + scaledCanvas.height
+    }
+};
+// **
+
+// Player declaration,
 const player = new Player({
     position: {
         x: 100, y: 300
@@ -105,54 +126,13 @@ const player = new Player({
         }
     }
 });
-
+// Player Movement declaration
+window.addEventListener("keydown", keyDown);
+window.addEventListener("keyup", keyUp);
 const keys = {
     left: false,
     right: false,
 };
-
-const background = new Sprite({
-    position: {
-        x: 0,
-        y: 0
-    },
-    imageSrc: './assets/background.png'
-});
-
-const backgroundImageHeight = 432
-const camera = {
-    position: {
-        x: 0,
-        y: -backgroundImageHeight + scaledCanvas.height
-    }
-};
-
-function animate() {
-    window.requestAnimationFrame(animate);
-    c.fillStyle = "white";
-
-    c.save()
-    c.fillRect(0, 0, canvas.width, canvas.height);
-    c.scale(4, 4);
-    c.translate(camera.position.x, camera.position.y);
-    background.update();
-    
-    // collisionBlocks.forEach(collisionBlock => {
-    //     collisionBlock.update();
-    // });
-    // platformCollisionBlocks.forEach(block => {
-    //     block.update();
-    // });
-
-    player.update();
-    applyPlayerMovement();
-    c.restore();
-};
-
-// animate();
-
-window.addEventListener("keydown", keyDown);
-window.addEventListener("keyup", keyUp);
 
 function keyDown(e) {
     switch (e.key) {
@@ -163,7 +143,7 @@ function keyDown(e) {
             keys.left = true;
             break;
         case 'w':
-            player.velocity.y = -4;
+            jump();
             break;
     }
 };
@@ -178,6 +158,16 @@ function keyUp(e) {
             break;
     }
 };
+
+function jump(){
+    if(player.jumpsLeft > 0){
+        player.velocity.y = -4;
+        if(player.jumpsLeft ==1){
+            player.velocity.y *= 1.5;
+        }
+    }
+   player.jumpsLeft--;
+}
 
 function applyPlayerMovement() {
     player.velocity.x = 0;
@@ -200,6 +190,7 @@ function applyPlayerMovement() {
     }
 
     if (player.velocity.y < 0) {
+      
         player.panCameraDown({ canvas, camera });
         if (player.lastDirection === "right") player.switchSprite("Jump");
         else
@@ -207,13 +198,34 @@ function applyPlayerMovement() {
     } else if (player.velocity.y > 0) {
         player.panCameraUp({ canvas, camera });
         if (player.lastDirection === "right")
-            player.switchSprite("Fall");
+        player.switchSprite("Fall");
         else
-            player.switchSprite("FallLeft");
+        player.switchSprite("FallLeft");
     }
 
 
 };
+// ***
+// Animation 
+function animate() {
+    window.requestAnimationFrame(animate);
+    c.fillStyle = "white";
 
+    c.save()
+    c.fillRect(0, 0, canvas.width, canvas.height);
+    c.scale(4, 4);
+    c.translate(camera.position.x, camera.position.y);
+    background.update();
 
+    // collisionBlocks.forEach(collisionBlock => {
+    //     collisionBlock.update();
+    // });
+    // platformCollisionBlocks.forEach(block => {
+    //     block.update();
+    // });
+
+    player.update();
+    applyPlayerMovement();
+    c.restore();
+};
 animate();

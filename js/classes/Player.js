@@ -1,11 +1,13 @@
 class Player extends Sprite {
-    constructor({ position, collisionBlocks, platformCollisionBlocks, imageSrc, frameRate, scale = 0.5, animations }) {
+    constructor({ position, collisionBlocks, platformCollisionBlocks, imageSrc, frameRate, scale = 0.5, animations, jumpsLeft=2, maxJumps=2 }) {
         super({ imageSrc, frameRate, scale });
         this.position = position;
         this.velocity = {
             x: 0,
             y: 1
         }
+        this.jumpsLeft = jumpsLeft,
+        this.maxJumps = maxJumps
         this.collisionBlocks = collisionBlocks;
         this.platformCollisionBlocks = platformCollisionBlocks;
         this.hitBox = {
@@ -52,7 +54,7 @@ class Player extends Sprite {
             width: 200,
             height: 80
         }
-    }
+    };
 
     checkForHorizontalCanvasCollisions(){
         if(this.hitBox.position.x + this.hitBox.width + this.velocity.x >= 576|| 
@@ -60,7 +62,7 @@ class Player extends Sprite {
             this.velocity.x = 0;
         }
       
-    }
+    };
 
     panCameraToTheLeft({canvas, camera}){
         const cameraBoxRightSide = this.cameraBox.position.x + this.cameraBox.width;
@@ -148,7 +150,6 @@ class Player extends Sprite {
     applyGravity() {
         this.velocity.y += gravity;
         this.position.y += this.velocity.y;
-
     };
 
     checkForVerticalCollisions() {
@@ -161,6 +162,7 @@ class Player extends Sprite {
                     this.velocity.y = 0;
                     const offset = this.hitBox.position.y - this.position.y + this.hitBox.height;
                     this.position.y = collisionBlock.position.y - offset - 0.01;
+                    this.jumpsLeft = this.maxJumps;
                     break;
                 }
 
@@ -183,16 +185,10 @@ class Player extends Sprite {
                     this.velocity.y = 0;
                     const offset = this.hitBox.position.y - this.position.y + this.hitBox.height;
                     this.position.y = platformCollisionBlock.position.y - offset - 0.01;
+                    this.jumpsLeft = this.maxJumps;
                     break;
                 }
-                // blocks the bottom of the platform \/ 
-                // commented of if necessary.
-                // if (this.velocity.y < 0) {
-                //     this.velocity.y = 0
-                //     const offset = this.hitBox.position.y - this.position.y;
-                //     this.position.y = platformCollisionBlock.position.y + platformCollisionBlock.height - offset + 0.01;
-                //     break;
-                // }
+                
             }
         }
     };
