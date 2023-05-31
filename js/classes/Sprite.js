@@ -29,17 +29,50 @@ class Sprite {
             height: this.image.height
         }
 
-        c.drawImage(
-            this.image,
-            cropbox.position.x,
-            cropbox.position.y,
-            cropbox.width,
-            cropbox.height,
-            this.position.x,
-            this.position.y,
-            this.width,
-            this.height
-        );
+        c.save();
+        if (this.isAttacking && this.lastDirection === "left") {
+            // Espelha a imagem horizontalmente
+            c.scale(-1, 1);
+            // Ajusta a posição para desenhar corretamente a imagem espelhada
+            const adjustedX = -this.position.x - this.width;
+            c.drawImage(
+                this.image,
+                cropbox.position.x,
+                cropbox.position.y,
+                cropbox.width,
+                cropbox.height,
+                adjustedX,
+                this.position.y,
+                this.width,
+                this.height
+            );
+        } else {
+            c.drawImage(
+                this.image,
+                cropbox.position.x,
+                cropbox.position.y,
+                cropbox.width,
+                cropbox.height,
+                this.position.x,
+                this.position.y,
+                this.width,
+                this.height
+            );
+        }
+
+        c.restore()
+        // defaultOne
+        // c.drawImage(
+        //     this.image,
+        //     cropbox.position.x,
+        //     cropbox.position.y,
+        //     cropbox.width,
+        //     cropbox.height,
+        //     this.position.x,
+        //     this.position.y,
+        //     this.width,
+        //     this.height
+        // );
     };
 
     update() {

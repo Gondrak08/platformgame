@@ -168,6 +168,17 @@ class Player extends Sprite {
     };
 
     updateAttackBox(){
+        if(this.lastDirection ==="left"){
+            this.attackBox ={
+                position:{
+                    x:this.position.x + 35 - (this.attackBox.width - 10),
+                    y:this.position.y + 26
+                },
+                width:40,
+                height:20
+            }
+        }
+        else
         this.attackBox ={
             position:{
                 x:this.position.x +35,
