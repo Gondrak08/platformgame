@@ -1,3 +1,4 @@
+
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext('2d');
 
@@ -11,6 +12,7 @@ const scaledCanvas = {
 
 // game gravity
 const gravity = 0.17
+// **
 
 // collisions
 const floorCollisions2D = [];
@@ -52,11 +54,8 @@ platformCollisions2D.forEach((row, y) => {
         }
     })
 });
-
-// end
-
-
 // **
+
 // background and camera
 const background = new Sprite({
     position: {
