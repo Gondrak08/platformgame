@@ -76,7 +76,7 @@ const camera = {
 // Player declaration,
 const player = new Player({
     position: {
-        x: 100, y: 300
+        x: 80, y: 320
     },
     collisionBlocks: collisionBlocks,
     platformCollisionBlocks: platformCollisionBlocks,
@@ -122,6 +122,11 @@ const player = new Player({
             imageSrc: './assets/warrior/FallLeft.png',
             frameRate: 2,
             frameBuffer: 2,
+        },
+        Attack: {
+            imageSrc: './assets/warrior/Attack1.png',
+            frameRate: 4,
+            frameBuffer: 8
         }
     }
 });
@@ -131,6 +136,7 @@ window.addEventListener("keyup", keyUp);
 const keys = {
     left: false,
     right: false,
+    attack: false,
 };
 
 function keyDown(e) {
@@ -144,6 +150,9 @@ function keyDown(e) {
         case 'w':
             jump();
             break;
+        case 'j':
+            player.attack();
+            break
     }
 };
 
@@ -155,21 +164,26 @@ function keyUp(e) {
         case 'a':
             keys.left = false;
             break;
+        // case 'j':
+        //     player.isAttacking = false
+        // break;
     }
 };
 
-function jump(){
-    if(player.jumpsLeft > 0){
+function jump() {
+    if (player.jumpsLeft > 0) {
         player.velocity.y = -4;
-        if(player.jumpsLeft ==1){
+        if (player.jumpsLeft == 1) {
             player.velocity.y *= 1.5;
         }
     }
-   player.jumpsLeft--;
+    player.jumpsLeft--;
 }
 
 function applyPlayerMovement() {
     player.velocity.x = 0;
+
+
     if (keys.right) {
         player.switchSprite('Run');
         player.velocity.x = 2;
@@ -183,13 +197,17 @@ function applyPlayerMovement() {
         player.panCameraToTheRight({ camera, canvas });
 
     }
-    else if (player.velocity.y === 0) {
-        if (player.lastDirection === "right") player.switchSprite("Idle");
-        else player.switchSprite("IdleLeft");
+    else if (player.velocity.y === 0 ) {
+        if(player.isAttacking){
+            player.switchSprite("Attack")
+        }else if (player.lastDirection === "right") 
+            player.switchSprite("Idle");
+        else
+             player.switchSprite("IdleLeft");
     }
 
+
     if (player.velocity.y < 0) {
-      
         player.panCameraDown({ canvas, camera });
         if (player.lastDirection === "right") player.switchSprite("Jump");
         else
@@ -197,10 +215,11 @@ function applyPlayerMovement() {
     } else if (player.velocity.y > 0) {
         player.panCameraUp({ canvas, camera });
         if (player.lastDirection === "right")
-        player.switchSprite("Fall");
+            player.switchSprite("Fall");
         else
-        player.switchSprite("FallLeft");
+            player.switchSprite("FallLeft");
     }
+
 
 
 };

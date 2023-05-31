@@ -1,13 +1,13 @@
 class Player extends Sprite {
-    constructor({ position, collisionBlocks, platformCollisionBlocks, imageSrc, frameRate, scale = 0.5, animations, jumpsLeft=2, maxJumps=2 }) {
+    constructor({ position, collisionBlocks, platformCollisionBlocks, imageSrc, frameRate, scale = 0.5, animations, jumpsLeft = 2, maxJumps = 2 }) {
         super({ imageSrc, frameRate, scale });
         this.position = position;
         this.velocity = {
             x: 0,
             y: 1
-        }
-        this.jumpsLeft = jumpsLeft,
-        this.maxJumps = maxJumps
+        };
+        this.jumpsLeft = jumpsLeft;
+        this.maxJumps = maxJumps;
         this.collisionBlocks = collisionBlocks;
         this.platformCollisionBlocks = platformCollisionBlocks;
         this.hitBox = {
@@ -17,15 +17,25 @@ class Player extends Sprite {
             },
             width: 10,
             height: 10,
+        };
+        this.isAttacking = false;
+        this.attackCount = 0;
+        this.attackBox ={
+            position:{
+                x:this.position.x,
+                y:this.position.y
+            },
+            width:100,
+            height:20
         }
+
         this.animations = animations;
         this.lastDirection = "right";
         for (let key in this.animations) {
             const image = new Image();
             image.src = this.animations[key].imageSrc;
             this.animations[key].image = image;
-        }
-
+        };
         this.cameraBox = {
             position: {
                 x: this.position.x,
@@ -33,7 +43,7 @@ class Player extends Sprite {
             },
             width: 200,
             height: 80
-        }
+        };
     };
 
     switchSprite(key) {
@@ -45,7 +55,7 @@ class Player extends Sprite {
         this.frameRate = this.animations[key].frameRate;
     };
 
-    updateCameraBox(){
+    updateCameraBox() {
         this.cameraBox = {
             position: {
                 x: this.position.x - 50,
@@ -56,57 +66,57 @@ class Player extends Sprite {
         }
     };
 
-    checkForHorizontalCanvasCollisions(){
-        if(this.hitBox.position.x + this.hitBox.width + this.velocity.x >= 576|| 
-            this.hitBox.position.x + this.velocity.x <=0){
+    checkForHorizontalCanvasCollisions() {
+        if (this.hitBox.position.x + this.hitBox.width + this.velocity.x >= 576 ||
+            this.hitBox.position.x + this.velocity.x <= 0) {
             this.velocity.x = 0;
         }
-      
+
     };
 
-    panCameraToTheLeft({canvas, camera}){
+    panCameraToTheLeft({ canvas, camera }) {
         const cameraBoxRightSide = this.cameraBox.position.x + this.cameraBox.width;
-        const scaledDownCanvasWidth  = canvas.width / 4;
+        const scaledDownCanvasWidth = canvas.width / 4;
 
-        if(cameraBoxRightSide >= 576) return;
+        if (cameraBoxRightSide >= 576) return;
 
-        if(cameraBoxRightSide >= scaledDownCanvasWidth + Math.abs(camera.position.x)){
+        if (cameraBoxRightSide >= scaledDownCanvasWidth + Math.abs(camera.position.x)) {
             console.log('camera panning to the left');
             camera.position.x -= this.velocity.x;
         }
 
     };
 
-    panCameraToTheRight({canvas, camera}){
-        if(this.cameraBox.position.x <= 0) return;
+    panCameraToTheRight({ canvas, camera }) {
+        if (this.cameraBox.position.x <= 0) return;
 
-        if(this.cameraBox.position.x <= Math.abs(camera.position.x)){
+        if (this.cameraBox.position.x <= Math.abs(camera.position.x)) {
             camera.position.x -= this.velocity.x;
         }
     };
-   
-    panCameraDown({canvas, camera}){
-        if(this.cameraBox.position.y + this.velocity.y <= 0) return;
-        if(this.cameraBox.position.y <= Math.abs(camera.position.y)){
+
+    panCameraDown({ canvas, camera }) {
+        if (this.cameraBox.position.y + this.velocity.y <= 0) return;
+        if (this.cameraBox.position.y <= Math.abs(camera.position.y)) {
             camera.position.y -= this.velocity.y;
         }
     };
 
-    panCameraUp({canvas, camera}){
+    panCameraUp({ canvas, camera }) {
         // canvasHeight = 432;
-        const canvasHeight = canvas.heigh 
-        if(this.cameraBox.position.y + this.cameraBox.height +  this.velocity.y >= canvasHeight) return;
+        const canvasHeight = canvas.heigh
+        if (this.cameraBox.position.y + this.cameraBox.height + this.velocity.y >= canvasHeight) return;
 
         const scaleDownCanvasHeight = canvas.height / 4
-        if(this.cameraBox.position.y + this.cameraBox.height >= Math.abs(camera.position.y) + scaleDownCanvasHeight ){
+        if (this.cameraBox.position.y + this.cameraBox.height >= Math.abs(camera.position.y) + scaleDownCanvasHeight) {
             camera.position.y -= this.velocity.y;
         }
     };
 
-    
     update() {
         this.updateFrames();
         this.updateHitBox();
+        this.updateAttackBox();
         this.updateCameraBox();
         this.checkForHorizontalCanvasCollisions();
         // 
@@ -119,17 +129,27 @@ class Player extends Sprite {
         //     this.cameraBox.height,
         // )
         // player hitbox box
-        // c.fillStyle = 'rgba(255,0,0,0.2)';
+        c.fillStyle = 'rgba(255,0,0,0.2)';
         // c.fillRect(
         //     this.hitBox.position.x,
         //     this.hitBox.position.y,
         //     this.hitBox.width,
         //     this.hitBox.height,
         // )
-        // 
+        // player attack box
+        if(this.isAttacking === true){
+            c.fillRect(
+                this.attackBox.position.x,
+                this.attackBox.position.y,
+                this.attackBox.width,
+                this.attackBox.height,
+            )
+        }
+        
         this.draw();
         this.position.x += this.velocity.x;
         this.updateHitBox();
+        this.updateAttackBox();
         this.checkForHorizontalCollisions();
         this.applyGravity();
         this.updateHitBox();
@@ -144,7 +164,25 @@ class Player extends Sprite {
             },
             width: 14,
             height: 27,
+        }        
+    };
+
+    updateAttackBox(){
+        this.attackBox ={
+            position:{
+                x:this.position.x +35,
+                y:this.position.y + 26
+            },
+            width:40,
+            height:20
         }
+    };
+
+    attack(){
+        this.isAttacking = true;
+        setTimeout(()=>{
+            this.isAttacking = false;
+        },500)
     };
 
     applyGravity() {
@@ -188,7 +226,7 @@ class Player extends Sprite {
                     this.jumpsLeft = this.maxJumps;
                     break;
                 }
-                
+
             }
         }
     };
@@ -216,5 +254,9 @@ class Player extends Sprite {
         }
     };
 
-
+    checkForAttackCollision(){
+        // if(
+        //     this.attackBox.position.x + this.attackBox.width >= 
+        // )
+    }
 };
